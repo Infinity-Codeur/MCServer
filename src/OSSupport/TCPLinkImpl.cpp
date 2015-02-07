@@ -7,6 +7,7 @@
 #include "TCPLinkImpl.h"
 #include "NetworkSingleton.h"
 #include "ServerHandleImpl.h"
+#include <event2/buffer.h>
 
 
 
@@ -121,6 +122,8 @@ void cTCPLinkImpl::Enable(cTCPLinkImplPtr a_Self)
 
 bool cTCPLinkImpl::Send(const void * a_Data, size_t a_Length)
 {
+	unsigned BytesPresent = static_cast<unsigned>(evbuffer_get_length(bufferevent_get_output(m_BufferEvent)));
+	LOGD("Writing %u bytes of data, there are already %u bytes queued", static_cast<unsigned>(a_Length), BytesPresent);
 	return (bufferevent_write(m_BufferEvent, a_Data, a_Length) == 0);
 }
 
